@@ -34,7 +34,10 @@ if(PACA_BUILD_TESTS)
     FetchContent_MakeAvailable(Catch2)
 
     # Define the test executable
-    add_executable(paca_tests tests/test_parser.cpp)
+    add_executable(paca_tests 
+        tests/test_parser.cpp
+        tests/test_exceptions.cpp
+    )
     
     # Link our library and the Catch2 entry point
     target_link_libraries(paca_tests PRIVATE paca::paca Catch2::Catch2WithMain)
