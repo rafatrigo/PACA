@@ -22,7 +22,6 @@ A CLI parser that can:
 
 - Accept flags like `--verbose` or `-v`
 - Ignore unknown arguments safely *(or throw exceptions)*
-- Automatically print a basic `--help` menu
 
 ---
 
@@ -55,6 +54,7 @@ A parser capable of:
 - Extracting typed variables
 - Setting default values when options are omitted
 - Throwing `cli::ConversionError` for invalid inputs
+- Automatically print a basic `--help` menu
 
 ---
 
