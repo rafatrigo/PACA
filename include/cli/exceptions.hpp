@@ -21,18 +21,18 @@ class UnknownArgument : public ParseError {
 public:
     explicit UnknownArgument(const std::string& argument_name)
         : ParseError("Unknown argument: " + argument_name),
-          m_argument_name(argument_name) {}
+          argument_name_(argument_name) {}
 
     /**
      * @brief Retrieves the name of the unknown argument.
      * @return The raw argument string that caused the failure.
      */
     const std::string& argument_name() const noexcept {
-        return m_argument_name;
+        return argument_name_;
     }
 
 private:
-    std::string m_argument_name;
+    std::string argument_name_;
 };
 
 } // namespace cli
