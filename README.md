@@ -9,10 +9,10 @@ PACA is a modern, header-only command-line argument parsing library for C++ focu
 We are incrementally building **PACA** towards a stable **v1.0** release. The project is structured into the following phases:
 
 ### Phase 1 (v0.1)
-Foundation, tokenization, basic boolean flags, and auto-help generation.
+Foundation, tokenization and basic boolean flags.
 
 ### Phase 2 (v0.2)
-Typed values (`std::string`, `int`, `bool`), named options, and conversion error handling.
+Typed values (`std::string`, `int`, `bool`), named options, auto-help generation, and conversion error handling.
 
 ### Phase 3 (v0.3)
 Grouped flags and validation constraints (e.g., `required()`).
