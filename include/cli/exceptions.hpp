@@ -35,4 +35,33 @@ private:
     std::string argument_name_;
 };
 
+/**
+ * @brief Exception thrown when string-to-type conversion fails.
+ */
+class ConversionError : public ParseError {
+public:
+    ConversionError(const std::string& value, const std::string& target_type)
+        : ParseError("Failed to convert '" + value + "' to " + target_type),
+          value_(value),
+          target_type_(target_type) {}
+
+    /**
+     * @brief Retrieves the raw string value that failed to convert.
+     */
+    const std::string& value() const noexcept {
+        return value_;
+    }
+
+    /**
+     * @brief Retrieves the name of the target type (e.g., "integer", "boolean").
+     */
+    const std::string& target_type() const noexcept {
+        return target_type_;
+    }
+
+private:
+    std::string value_;
+    std::string target_type_;
+};
+
 } // namespace cli

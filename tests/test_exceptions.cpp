@@ -20,12 +20,32 @@ TEST_CASE("CLI Exceptions behave correctly", "[exceptions]") {
         }
     }
 
+    SECTION("ConversionError stores and formats the bad value and target type") {
+        try {
+            throw cli::ConversionError("abc", "integer");
+        } 
+        catch (const cli::ConversionError& e) {
+            std::string expected_message = "Failed to convert 'abc' to integer";
+            REQUIRE(std::string(e.what()) == expected_message);
+            
+            REQUIRE(e.value() == "abc");
+            REQUIRE(e.target_type() == "integer");
+        }
+    }
+
     SECTION("ParseError acts as a base class") {
         // Verify that UnknownArgument can be caught as a generic ParseError
         try {
             throw cli::UnknownArgument("-x");
         } catch (const cli::ParseError& e) {
             REQUIRE(std::string(e.what()) == "Unknown argument: -x");
+        }
+
+        // Verify that ConversionError can be caught as a generic ParseError
+        try {
+            throw cli::ConversionError("3.14", "boolean");
+        } catch (const cli::ParseError& e) {
+            REQUIRE(std::string(e.what()) == "Failed to convert '3.14' to boolean");
         }
     }
 }
