@@ -37,6 +37,7 @@ if(PACA_BUILD_TESTS)
     add_executable(paca_tests 
         tests/test_parser.cpp
         tests/test_exceptions.cpp
+        tests/test_convert_impl.cpp
     )
     
     # Link our library and the Catch2 entry point
