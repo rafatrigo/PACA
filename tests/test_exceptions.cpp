@@ -33,6 +33,17 @@ TEST_CASE("CLI Exceptions behave correctly", "[exceptions]") {
         }
     }
 
+    SECTION("ValueNotSet stores and formats the missing option name correctly") {
+        try {
+            throw cli::ValueNotSet("--port");
+        } 
+        catch (const cli::ValueNotSet& e) {
+            std::string expected_message = "Value requested but was not set and has no default: --port";
+            REQUIRE(std::string(e.what()) == expected_message);
+            REQUIRE(e.option_name() == "--port");
+        }
+    }
+
     SECTION("ParseError acts as a base class") {
         // Verify that UnknownArgument can be caught as a generic ParseError
         try {
@@ -46,6 +57,14 @@ TEST_CASE("CLI Exceptions behave correctly", "[exceptions]") {
             throw cli::ConversionError("3.14", "boolean");
         } catch (const cli::ParseError& e) {
             REQUIRE(std::string(e.what()) == "Failed to convert '3.14' to boolean");
+        }
+
+        // Verify that ValueNotSet can be caught as a generic ParseError
+        try {
+            throw cli::ValueNotSet("--port");
+        } catch (const cli::ParseError& e) {
+            std::string expected_message = "Value requested but was not set and has no default: --port";
+            REQUIRE(std::string(e.what()) == expected_message);
         }
     }
 }

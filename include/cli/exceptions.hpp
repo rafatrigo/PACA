@@ -64,4 +64,25 @@ private:
     std::string target_type_;
 };
 
+/*
+ * @brief Exception thrown when attempting to access a value that was not provided and has no default.
+ * */
+class ValueNotSet : public ParseError {
+public:
+    explicit ValueNotSet(const std::string& option_name)
+        : ParseError("Value requested but was not set and has no default: " + option_name),
+          option_name_(option_name) {}
+    
+    /**
+     * @brief Retrieves the name of the option that was missing.
+     */
+    const std::string& option_name() const noexcept {
+        return option_name_;
+    }
+
+private:
+    std::string option_name_;
+
+};
+
 } // namespace cli
