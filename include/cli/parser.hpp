@@ -2,7 +2,9 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <memory>
 #include "exceptions.hpp"
+#include "option.hpp"
 
 namespace cli {
 
@@ -44,6 +46,30 @@ public:
     void add_flag(char short_name, std::string_view long_name, std::string_view desc, bool& bound_var);
 
     /**
+     * @brief Registers an option with a specific type (defaults to std::string).
+     *
+     * @param long_name The full word long option (e.g., "port").
+     */
+    template <typename T = std::string>
+    Option<T>& add_option(std::string_view long_name);
+
+    /**
+     * @brief Registers an option with a specific type (defaults to std::string).
+     *
+     * @param short_name The single-character short option (e.g., 'p').
+     * @param long_name The full word long option (e.g., "port").
+     */
+    template <typename T = std::string>
+    Option<T>& add_option(char short_name, std::string_view long_name);
+
+    /**
+     * @brief Retrieves the typed value of an option or flag.
+     * @throws cli::ParseError if the type requested mismatches the registered type.
+     */
+    template <typename T>
+    T get(std::string_view long_name) const;
+
+    /**
      * @brief Parses the command-line arguments.
      * 
      * @param argc The number of arguments passed by the OS.
@@ -72,10 +98,17 @@ private:
     std::string description_;
     std::vector<Flag> flags_;
 
+    std::vector<std::unique_ptr<OptionBase>> options_;
+
     // Internal helpers declared here, but defined in impl
     void set_flag_state(Flag& flag);
     void handle_long_flag(std::string_view name, std::string_view original_arg);
     void handle_short_flag(char name, std::string_view original_arg);
+
+    bool handle_long_option(std::string_view name, std::string_view value);
+    bool handle_short_option(char name, std::string_view value);
+    bool is_long_option(std::string_view name) const;
+    bool is_short_option(char name) const;
 };
 
 } // namespace cli
