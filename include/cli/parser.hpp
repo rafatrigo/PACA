@@ -86,6 +86,12 @@ public:
      */
     [[nodiscard]] bool is_set(std::string_view long_name) const;
 
+    /**
+     * @brief Generates a formatted help menu string based on registered options and flags.
+     * @return A formatted std::string containing usage and descriptions.
+     */
+    [[nodiscard]] std::string generate_help() const;
+
 private:
     struct Flag {
         char short_name;

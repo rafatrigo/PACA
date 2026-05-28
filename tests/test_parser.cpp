@@ -181,3 +181,35 @@ TEST_CASE("Parser safely handles option errors and exceptions", "[parser][except
         REQUIRE_THROWS_WITH(bad_get(), Catch::Matchers::ContainsSubstring("Option not found"));
     }
 }
+
+TEST_CASE("Parser generates correct help output", "[parser][help]") {
+    cli::Parser parser("My Test Application");
+
+    // Add various options and flags
+    parser.add_option<int>('p', "port").description("Port to bind").required();
+    parser.add_option<std::string>("host").description("Host address"); // No short name
+    parser.add_flag('v', "verbose", "Enable verbose mode");
+
+    std::string help_text = parser.generate_help();
+
+    SECTION("Help text includes standard headers and description") {
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("Usage: [options]"));
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("Description:"));
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("My Test Application"));
+    }
+
+    SECTION("Help text auto-registers and formats the default help flag") {
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("-h, --help"));
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("Print this help message and exit"));
+    }
+
+    SECTION("Help text formats flags and options correctly") {
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("-p, --port"));
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("    --host")); // Notice the padding for missing short flag
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("-v, --verbose"));
+    }
+
+    SECTION("Required options are visually marked") {
+        REQUIRE_THAT(help_text, Catch::Matchers::ContainsSubstring("[Required] Port to bind"));
+    }
+}
