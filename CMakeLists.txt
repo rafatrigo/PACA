@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(PACA VERSION 0.1.0 LANGUAGES CXX)
+project(PACA VERSION 0.2.0 LANGUAGES CXX)
 
 # ------------------------------------------------------------------------------
 # Main Library Target (Header-Only)
