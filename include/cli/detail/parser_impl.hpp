@@ -1,4 +1,11 @@
 #pragma once
+
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
+#include <cstdlib>
+
 // NOTE: We don't need to #include "parser.hpp" here because 
 // this file is included AT THE BOTTOM of parser.hpp.
 
@@ -6,7 +13,10 @@ namespace cli {
 
 // Use 'inline' to prevent multiple definition errors in a header-only library
 inline Parser::Parser(std::string app_description)
-    : description_(std::move(app_description)) {}
+    : description_(std::move(app_description)) {
+        // Auto-register the default help flag
+        add_flag('h', "help", "Print this help message and exit");
+    }
 
 inline void Parser::add_flag(char short_name, std::string_view long_name, std::string_view desc) {
     flags_.push_back({short_name, std::string(long_name), std::string(desc), false, nullptr});
@@ -60,6 +70,15 @@ inline T Parser::get(std::string_view long_name) const {
 }
 
 inline void Parser::parse(int argc, const char* const* argv) {
+    // Pre-scan for help flag. If found, print and exit immediately.
+    for (int i = 1; i < argc; ++i) {
+        std::string_view arg(argv[i]);
+        if (arg == "-h" || arg == "--help") {
+            std::cout << generate_help();
+            std::exit(0);
+        }
+    }
+
     for (int i = 1; i < argc; ++i) {
         std::string_view arg(argv[i]);
 
@@ -194,4 +213,59 @@ inline bool Parser::is_short_option(char name) const {
     return false;
 }
 
+inline std::string Parser::generate_help() const {
+    std::ostringstream oss;
+    oss << "Usage: [options]\n\n";
+
+    if (!description_.empty()) {
+        oss << "Description:\n  " << description_ << "\n\n";
+    }
+
+    // Helper lambda to format the "-s, --long" part
+    auto get_name_str = [](char short_name, std::string_view long_name) {
+        std::string s = "  ";
+        if (short_name != '\0') {
+            s += "-";
+            s += short_name;
+            s += ", ";
+        } else {
+            s += "    "; // Padding if no short name exists
+        }
+        s += "--";
+        s += long_name;
+        return s;
+    };
+
+    // Calculate maximum width for formatting alignment
+    size_t max_width = 0;
+    for (const auto& flag : flags_) {
+        max_width = std::max(max_width, get_name_str(flag.short_name, flag.long_name).length());
+    }
+    for (const auto& opt : options_) {
+        max_width = std::max(max_width, get_name_str(opt->short_name(), opt->long_name()).length());
+    }
+
+    const int padding = 4; // Space between the option name and description
+    oss << "Options:\n";
+
+    // Print flags
+    for (const auto& flag : flags_) {
+        oss << std::left << std::setw(max_width + padding) 
+            << get_name_str(flag.short_name, flag.long_name) 
+            << flag.description << "\n";
+    }
+
+    // Print options
+    for (const auto& opt : options_) {
+        std::string desc = opt->description();
+        if (opt->is_required()) {
+            desc = "[Required] " + desc;
+        }
+        oss << std::left << std::setw(max_width + padding) 
+            << get_name_str(opt->short_name(), opt->long_name()) 
+            << desc << "\n";
+    }
+
+    return oss.str();
+}
 } // namespace cli
