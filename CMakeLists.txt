@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(PACA VERSION 0.1.0 LANGUAGES CXX)
+project(PACA VERSION 0.2.0 LANGUAGES CXX)
 
 # ------------------------------------------------------------------------------
 # Main Library Target (Header-Only)
@@ -37,6 +37,9 @@ if(PACA_BUILD_TESTS)
     add_executable(paca_tests 
         tests/test_parser.cpp
         tests/test_exceptions.cpp
+        tests/test_convert_impl.cpp
+        tests/test_value.cpp
+        tests/test_option.cpp
     )
     
     # Link our library and the Catch2 entry point
